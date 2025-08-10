@@ -1,0 +1,48 @@
+
+主旨：今日考勤報告 - 遲到人員通知
+
+內容：
+各位好，
+
+以下是 2025年08月10日 遲到次數 ≥ 1 的人員名單：
+
+<table border="1" class="dataframe table table-striped">
+  <thead>
+    <tr style="text-align: right;">
+      <th>emp_id</th>
+      <th>name</th>
+      <th>date</th>
+      <th>check_in</th>
+      <th>check_out</th>
+      <th>status</th>
+      <th>work_hours</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>E-01</td>
+      <td>Alice</td>
+      <td>2025-08-01</td>
+      <td>09:05</td>
+      <td>18:10</td>
+      <td>Late</td>
+      <td>9.08</td>
+    </tr>
+    <tr>
+      <td>E-03</td>
+      <td>Charlie</td>
+      <td>2025-08-01</td>
+      <td>09:05</td>
+      <td>18:10</td>
+      <td>Late</td>
+      <td>9.08</td>
+    </tr>
+  </tbody>
+</table>
+
+請相關人員注意準時到班，如有特殊情況請提前說明。
+
+如有任何問題，請隨時聯繫。
+
+謝謝！
+    
