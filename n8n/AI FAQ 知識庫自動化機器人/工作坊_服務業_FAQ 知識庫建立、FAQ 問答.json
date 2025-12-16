@@ -1,0 +1,446 @@
+{
+  "name": "工作坊_服務業_FAQ 知識庫建立、FAQ 問答",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "上傳檔案建立 RAG 知識庫",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "檔案資料",
+              "fieldType": "file",
+              "acceptFileTypes": "=Word、Excel、txt",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -976,
+        -32
+      ],
+      "id": "f13cceef-ce7a-4e0a-9fbc-7950288194d5",
+      "name": "On form submission",
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "____",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "你是一個專門解析 FAQ 文件的 AI。\n\n任務：\n把使用者提供的文件內容解析成結構化 FAQ。\n\n輸出格式必須是 JSON Array，每個項目包含：\n{\n  \"category\": \"string\",\n  \"question\": \"string\",\n  \"answer\": \"string\"\n}\n\n解析規則：\n1. category 需依據服務分類，例如：預約、價格、美甲、美容、美睫、注意事項、退換、衛生等。\n2. question 必須是可被使用者直接提問的句子。\n3. answer 必須是清楚的解答，不得留空。\n4. 遇到不完整句子時，需自行補齊語意。\n5. 如果一段文字內含多個 Q&A，請拆成多筆資料。\n6. 一律輸出 JSON Array，不能輸出其他文字。"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -752,
+        -128
+      ],
+      "id": "263359ad-3b17-45a7-86b9-e9a7d7c23edc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        96
+      ],
+      "id": "361c42a4-fdf7-4070-96fd-d21466a2ff0e",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "category": "={{ $json.category }}",
+            "question": "={{ $json.question }}",
+            "answer": "={{ $json.answer }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "answer",
+              "displayName": "answer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -32
+      ],
+      "id": "d315fa6b-3e2a-41f3-af5a-0fe50fa4483f",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "jsCode": "// AI Agent 產生的是字串形式的 JSON 陣列\n// 例如：\"[{ \\\"category\\\": \\\"預約\\\", \\\"question\\\": \\\"...\\\", \\\"answer\\\": \\\"...\\\" }, ...]\"\n\nconst raw = $input.first().json.output;        // 讀取 AI Agent 的 output 字串\nconst faqs = JSON.parse(raw);    // 轉成真正的陣列\n\n// 把陣列拆成多個 item 回傳給下一個節點\nreturn faqs.map(faq => ({ json: faq }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -32
+      ],
+      "id": "5d3dc5a5-c353-475b-9803-3acc8022922f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "檔案已完成",
+        "completionMessage": "檔案已完成上傳並建立至知識庫囉。\n可以去與 AI 進行問答囉。",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        48,
+        -32
+      ],
+      "id": "ea9535fb-515b-4055-b2ee-c0405f120ea8",
+      "name": "Form",
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=message : {{ $json.message }}\nuserId : {{ $json.userId }}\nreplyToken : {{ $json.replyToken }}",
+        "options": {
+          "systemMessage": "你是一個 FAQ 專業客服助理。\n\n重要規則（必讀）：\n你【不能】根據自己的知識回答。\n你【不能】依靠模型推理回答。\n你【必須】使用 **DataTableTool 工具**查詢後，才能作答。\n\n你的回答流程如下：\n1. 收到使用者問題後，立即使用  **DataTableTool 工具**進行查詢。\n   查詢方式：將使用者的問題字串作為搜尋關鍵字。\n2. 等待  **DataTableTool 工具**回傳資料後，再根據查詢結果回答。\n3. 如果查到多筆 FAQ，需整合為一個自然、口語、簡潔的回覆。\n4. 如果查不到任何資料，請回覆：\n   「目前知識庫沒有這部分資訊。」\n5. 你不可以自行憑空回答。所有回答都必須根據  **DataTableTool 工具**的結果。\n\n禁止事項：\n- 不可以猜測。\n- 不可以依靠常識回答。\n- 不可以跳過查詢步驟。\n- 不可以引用你模型內建的知識。\n\n你唯一的資料來源是  **DataTableTool 工具**。\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -528,
+        416
+      ],
+      "id": "0d8e3d86-2cd9-4476-8476-cb9e7634df67",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        640
+      ],
+      "id": "84ce190d-e94d-467f-bed0-ffde5630bbca",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "question",
+              "condition": "like",
+              "keyValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('conditions0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}"
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        640
+      ],
+      "id": "81e1e486-f965-4adb-b615-13d94a8cb4ca",
+      "name": "DataTableTool"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "zeabur-test",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -976,
+        416
+      ],
+      "id": "0e76e6ed-6d24-4ebb-b27b-c08fcc73ee6e",
+      "name": "Webhook",
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ae2929e7-2e04-43c8-8d7d-d919de0eb30b",
+              "name": "message",
+              "value": "={{ $json.body.events[0].message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "21c47c48-f1a0-4f13-ad39-9fbecd16d184",
+              "name": "userId",
+              "value": "={{ $json.body.events[0].source.userId }}",
+              "type": "string"
+            },
+            {
+              "id": "baad43c6-350d-47b5-b8cd-244b6e7e9217",
+              "name": "replyToken",
+              "value": "={{ $json.body.events[0].replyToken }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -752,
+        416
+      ],
+      "id": "884d16e4-8474-4e01-bf75-c0f87c864d29",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"replyToken\":\"{{ $('Edit Fields').item.json.replyToken }}\",\n    \"messages\":[\n        {\n            \"type\":\"text\",\n            \"text\":\"{{ $json.output.replace(/\\n/g, \"\\\\n\") }}\" \n        }\n    ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -176,
+        416
+      ],
+      "id": "aaf01ceb-8c1a-479d-868a-3b1b8111efb9",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "",
+          "name": ""
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DataTableTool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3bc0316a-2e0a-41e5-8b7f-a856e6add4bc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "otCgnemhcPCsErIT",
+  "tags": [
+    {
+      "updatedAt": "2025-12-11T15:56:55.184Z",
+      "createdAt": "2025-12-11T15:56:55.184Z",
+      "id": "RGyP5P3s5blxFvJK",
+      "name": "workshop"
+    },
+    {
+      "updatedAt": "2025-12-11T15:56:44.291Z",
+      "createdAt": "2025-12-11T15:56:44.291Z",
+      "id": "YAUkYvkxmWlq3ziO",
+      "name": "service"
+    },
+    {
+      "updatedAt": "2025-12-11T02:57:11.571Z",
+      "createdAt": "2025-12-11T02:57:11.571Z",
+      "id": "u6b8svyrdsA4yKaP",
+      "name": "AI"
+    }
+  ]
+}
