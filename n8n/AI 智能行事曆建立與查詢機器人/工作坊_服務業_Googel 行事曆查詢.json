@@ -1,0 +1,338 @@
+{
+  "name": "工作坊_服務業_Googel 行事曆查詢",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "你是個精明的助理，專門管理我的每日行程，主要透過手機語音與使用者互動。\n\n核心規則（最優先）\n- 絕對不可以假裝執行操作：任何對行事曆的動作，都必須實際呼叫對應的工具\n- 沒有成功呼叫工具並得到確認結果前，不可以告訴使用者「已完成」\n- 如果工具呼叫失敗，必須誠實告知，不可以編造成功的結果\n\n個性與互動方式\n- 講話要簡短俐落，能一句話說完就不要兩句\n- 請使用簡潔且容易朗讀的繁體中文回覆，避免使用任何會被語音系統讀出符號名稱的字元\n- 保持回覆簡短、清晰，適合語音播放\n- 回答時直接講重點，不要囉嗦客套\n\n行事曆操作規則\n任何跟行事曆或行程相關的問題，務必使用以下工具：\n- 查詢行程\n  - 使用 Calendar List 工具取得列表\n  - 使用 Get Calendar 工具取得單筆行程詳細資訊\n- 新增行程\n  - 務必使用 Create Calendar 工具，不可以假裝執行操作\n   - 必須包含標題，這是必填欄位\n   - 如果使用者沒有明確說明標題，根據行程內容自動生成一個清楚的標題\n   - 根據使用者需求設定開始時間、結束時間、地點等其他資訊\n- 新增前必須先檢查時間衝突：\n   - 先用 Calendar List 工具查詢該日期的所有行程\n   - 檢查新行程的時間範圍是否與現有行程重疊（只要有任何時間重疊就算衝突）\n   - 衝突判斷規則：如果新行程的開始時間在現有行程的時間範圍內，或結束時間在現有行程的時間範圍內，或新行程完全包含現有行程，都算衝突\n   - 如果有衝突，簡短告知並詢問，例如：「明天十點到四點已經有 XXX 行程，是否要新增這個行程？」\n   - 等使用者確認後再執行新增\n- 日期處理規則\n   - 一律使用日期工具取得正確的日期\n   - 沒有特別聲明時，預設指的是今天\n   - 每週的起始日是星期一，最後一天是星期日\n   - 「這週」指本週一到週日，「下週」指下個星期一到週日\n- 其他規則\n   - 若不知道答案，直接回覆「我不知道」\n   - 務必使用台灣繁體中文\n   - 一般操作執行前不需要過度確認，直接完成任務後告知結果\n   - 但遇到時間衝突時，必須先詢問使用者意見再執行"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        416,
+        -304
+      ],
+      "id": "77ed1224-b7ba-434a-abc5-c84771f76bff",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        352,
+        -80
+      ],
+      "id": "43b07d36-a68d-4e6a-a9ac-b8727723f6bb",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": ""
+        },
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Limit', ``, 'number') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        -80
+      ],
+      "id": "8c26e048-e175-404e-8f98-2e7e746a1f86",
+      "name": "Get Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": ""
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Location', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        -80
+      ],
+      "id": "877cc6cf-6c12-4b46-8a01-a617a5cfb6ea",
+      "name": "Create Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "calendar": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": ""
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        736,
+        -80
+      ],
+      "id": "3f0c643b-ca81-43cd-88d2-efc4a186bd77",
+      "name": "Get One Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -80
+      ],
+      "id": "0f282e57-796c-482b-bd6e-a8307a12c2d7",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "zeabur-test",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        -304
+      ],
+      "id": "3d87abec-9c40-4850-9a4e-3da928cd901e",
+      "name": "Webhook",
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0b69d906-0bbe-4064-abfb-6160f499e0d6",
+              "name": "userId",
+              "value": "={{ $json.body.events[0].source.userId }}",
+              "type": "string"
+            },
+            {
+              "id": "19e90e69-3e87-4e6f-bfc2-e61ff5c5ad75",
+              "name": "message",
+              "value": "={{ $json.body.events[0].message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "f1530524-25ac-43db-ad9f-e54bfb8ab8ec",
+              "name": "replyToken",
+              "value": "={{ $json.body.events[0].replyToken }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        -304
+      ],
+      "id": "dd9fd05b-4324-4716-9bd4-11a6f40d786c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"replyToken\":\"{{ $('Edit Fields').item.json.replyToken }}\",\n    \"messages\":[\n        {\n            \"type\":\"text\",\n            \"text\":\"{{ $json.output.replace(/\\n/g, \"\\\\n\") }}\" \n        }\n    ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        944,
+        -304
+      ],
+      "id": "d2062f0b-a943-48bc-91ed-8af859450cb5",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "",
+          "name": ""
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get One Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "46230c5b-05c8-4c23-a9c0-082416615f78",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "GNspYWhzBS4piwnM",
+  "tags": [
+    {
+      "updatedAt": "2025-12-11T02:57:11.571Z",
+      "createdAt": "2025-12-11T02:57:11.571Z",
+      "id": "u6b8svyrdsA4yKaP",
+      "name": "AI"
+    },
+    {
+      "updatedAt": "2025-12-11T15:56:44.291Z",
+      "createdAt": "2025-12-11T15:56:44.291Z",
+      "id": "YAUkYvkxmWlq3ziO",
+      "name": "service"
+    },
+    {
+      "updatedAt": "2025-12-11T15:56:55.184Z",
+      "createdAt": "2025-12-11T15:56:55.184Z",
+      "id": "RGyP5P3s5blxFvJK",
+      "name": "workshop"
+    }
+  ]
+}
