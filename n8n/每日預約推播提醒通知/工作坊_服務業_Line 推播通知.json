@@ -1,0 +1,260 @@
+{
+  "name": "工作坊_服務業_Line 推播通知",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -496,
+        -240
+      ],
+      "id": "19114528-8bb2-46a1-8de7-04efeb01a764",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 421740440,
+          "mode": "list",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -272,
+        -240
+      ],
+      "id": "a4093481-e7bd-49d2-a889-577212378a57",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bb83341f-da80-4f9b-b729-60ebe73e4d57",
+              "leftValue": "={{ $json['是否取消預約'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "bd0d1396-206c-44b1-abd6-b8c965856472",
+              "leftValue": "={{ $json['日期'] }}",
+              "rightValue": "={{ $now.format('yyyy-MM-dd') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        -240
+      ],
+      "id": "d46a1af2-87bc-4e4c-8277-7a083e734b5b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "日期"
+            },
+            {
+              "fieldToAggregate": "時間"
+            },
+            {
+              "fieldToAggregate": "品項"
+            },
+            {
+              "fieldToAggregate": "UserID"
+            }
+          ]
+        },
+        "options": {
+          "mergeLists": false
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        176,
+        -240
+      ],
+      "id": "b28570a9-e13c-48ee-afa1-dc73473e401c",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"USERID\" : {{ $json.UserID[0] }},\n  \"reminderText\": \"{{\n    `預約日期：${$json.日期[0]}\\n` +\n    $json.時間\n      .map((t, i) => `${t}｜${$json.品項[i]}`)\n      .join('\\\\n')\n  }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        -240
+      ],
+      "id": "a96f822a-6b78-4e84-bacf-b40e5bae1e0f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/push",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"{{ $json.USERID }}\", \n  \"messages\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"{{ $json.reminderText.replace(/\\n/g, '\\\\n')}}\"\n    }\n  ]\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        624,
+        -240
+      ],
+      "id": "725e5a10-8958-41ce-aa17-e6b931b30c90",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "",
+          "name": ""
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "37270045-8585-4506-a649-1516b5a633ac",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "BZcgwOU0AOi87Osb",
+  "tags": [
+    {
+      "updatedAt": "2025-12-11T02:57:11.571Z",
+      "createdAt": "2025-12-11T02:57:11.571Z",
+      "id": "u6b8svyrdsA4yKaP",
+      "name": "AI"
+    },
+    {
+      "updatedAt": "2025-12-11T15:56:44.291Z",
+      "createdAt": "2025-12-11T15:56:44.291Z",
+      "id": "YAUkYvkxmWlq3ziO",
+      "name": "service"
+    },
+    {
+      "updatedAt": "2025-12-11T15:56:55.184Z",
+      "createdAt": "2025-12-11T15:56:55.184Z",
+      "id": "RGyP5P3s5blxFvJK",
+      "name": "workshop"
+    }
+  ]
+}
