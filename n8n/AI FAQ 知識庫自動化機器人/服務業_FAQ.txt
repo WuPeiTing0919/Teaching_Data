@@ -1,0 +1,326 @@
+📌 預約相關（6 筆）
+1.
+
+category: 預約
+question: 請問做美甲需要提前多久預約？
+answer: 建議至少提前 3 至 5 天預約，節日前請提前一到兩週。
+tags: 預約,時間
+serviceType: 美甲
+
+2.
+
+category: 預約
+question: 可以當天預約嗎？
+answer: 若當天有空檔即可安排，建議私訊詢問最新時間。
+tags: 當天預約
+serviceType: 全部
+
+3.
+
+category: 預約
+question: 請問可以指定設計師嗎？
+answer: 可以，但依設計師檔期安排，熱門設計師可能需提前預約。
+tags: 指定,設計師
+serviceType: 全部
+
+4.
+
+category: 預約
+question: 要取消預約怎麼辦？
+answer: 請至少提前 24 小時通知，我們會協助改期。
+tags: 取消預約
+serviceType: 全部
+
+5.
+
+category: 預約
+question: 遲到會怎樣？
+answer: 遲到 10 分鐘以上可能縮短服務內容；超過 20 分鐘可能須改期。
+tags: 遲到
+serviceType: 全部
+
+6.
+
+category: 預約
+question: 請問接受哪些預約方式？
+answer: 可透過 LINE、IG 或官方網站預約。
+tags: 預約方式
+serviceType: 全部
+
+📌 美甲流程 & 保養（8 筆）
+7.
+
+category: 美甲保養
+question: 做光療指甲可以維持多久？
+answer: 通常可維持 3 至 4 週，依生活習慣與甲面狀況而定。
+tags: 光療,維持
+serviceType: 美甲
+
+8.
+
+category: 美甲保養
+question: 第一次做光療需要注意什麼？
+answer: 請確保指甲沒有傷口並避免提前自行修剪過短。
+tags: 新手,光療
+serviceType: 美甲
+
+9.
+
+category: 美甲保養
+question: 指甲容易斷怎麼辦？
+answer: 建議做加厚或選擇延甲服務，可提升硬度與耐久度。
+tags: 指甲斷,加厚
+serviceType: 美甲
+
+10.
+
+category: 美甲保養
+question: 光療卸甲會傷指甲嗎？
+answer: 正確卸甲不會傷害，但自行拔甲會導致甲面受損。
+tags: 卸甲
+serviceType: 美甲
+
+11.
+
+category: 美甲保養
+question: 做完光療可以馬上碰水嗎？
+answer: 光療照燈後即可硬化，可立即正常使用。
+tags: 碰水
+serviceType: 美甲
+
+12.
+
+category: 美甲保養
+question: 懷孕可以做光療嗎？
+answer: 可以，但建議告知設計師避免用刺激性溶劑。
+tags: 懷孕
+serviceType: 美甲
+
+13.
+
+category: 美甲保養
+question: 光療容易掉怎麼辦？
+answer: 可能因甲面油脂、生活習慣或甲片過薄，建議加厚或做甲面處理。
+tags: 掉光療
+serviceType: 美甲
+
+14.
+
+category: 美甲保養
+question: 指甲要多久修一次形？
+answer: 約 2–3 週，可與卸甲或回補一起處理。
+tags: 修形
+serviceType: 美甲
+
+📌 美容保養（6 筆）
+15.
+
+category: 美容保養
+question: 做臉多久一次比較好？
+answer: 一般建議 3 至 4 週做一次保養。
+tags: 做臉
+serviceType: 美容
+
+16.
+
+category: 美容保養
+question: 敏感肌能做深層清潔嗎？
+answer: 可，但需由美容師評估適合的強度與產品。
+tags: 敏感肌
+serviceType: 美容
+
+17.
+
+category: 美容保養
+question: 做臉後能馬上化妝嗎？
+answer: 建議至少隔 6–8 小時，讓皮膚充分吸收保養品。
+tags: 化妝
+serviceType: 美容
+
+18.
+
+category: 美容保養
+question: 痘痘肌適合哪些臉部保養？
+answer: 建議清粉刺、油水平衡調理、溫和去角質等課程。
+tags: 痘痘肌
+serviceType: 美容
+
+19.
+
+category: 美容保養
+question: 做臉會痛嗎？
+answer: 清粉刺時可能有些微刺痛，但大部分流程是放鬆的。
+tags: 痛
+serviceType: 美美容
+
+20.
+
+category: 美容保養
+question: 做臉後要避免什麼？
+answer: 避免暴曬、劇烈運動與含酒精保養品。
+tags: 注意事項
+serviceType: 美容
+
+📌 美睫 / 霧眉（6 筆）
+21.
+
+category: 美睫
+question: 嫁接睫毛可以維持多久？
+answer: 約 3 至 5 週，依睫毛生長週期而定。
+tags: 嫁接,睫毛
+serviceType: 美睫
+
+22.
+
+category: 美睫
+question: 接睫毛後可以碰水嗎？
+answer: 前 6 小時避免碰水，之後正常生活即可。
+tags: 接睫毛
+serviceType: 美睫
+
+23.
+
+category: 美睫
+question: 接睫毛會傷害真睫毛嗎？
+answer: 正確操作不會，重要的是避免搓揉眼睛。
+tags: 傷睫毛
+serviceType: 美睫
+
+24.
+
+category: 霧眉
+question: 霧眉後多久會恢復？
+answer: 約 5–7 天結痂，1 個月完全穩定。
+tags: 霧眉
+serviceType: 霧眉
+
+25.
+
+category: 霧眉
+question: 霧眉會很痛嗎？
+answer: 僅微痛，操作前會塗麻膏降低不適感。
+tags: 痛
+serviceType: 霧眉
+
+26.
+
+category: 霧眉
+question: 霧眉後多久可以化眉毛？
+answer: 建議至少等 10 至 14 天。
+tags: 化妝
+serviceType: 霧眉
+
+📌 價格 / 付款（5 筆）
+27.
+
+category: 價格
+question: 請問價格怎麼計算？
+answer: 依造型、施作時間、材料及服務內容計價。
+tags: 價格
+serviceType: 全部
+
+28.
+
+category: 價格
+question: 是否有套餐或方案？
+answer: 我們提供多種保養與造型方案，請洽詢設計師。
+tags: 套餐
+serviceType: 全部
+
+29.
+
+category: 價格
+question: 支援哪些付款方式？
+answer: 支援現金、轉帳、LinePay 等方式。
+tags: 付款
+serviceType: 全部
+
+30.
+
+category: 價格
+question: 卸甲是否另外收費？
+answer: 自家作品免費卸甲，他家作品需酌收費用。
+tags: 卸甲,價格
+serviceType: 美甲
+
+31.
+
+category: 價格
+question: 美睫補接怎麼計費？
+answer: 依剩餘睫毛量與補接根數計價。
+tags: 補接
+serviceType: 美睫
+
+📌 衛生與安全（5 筆）
+32.
+
+category: 衛生
+question: 工具是否有高溫消毒？
+answer: 所有器具皆經過高溫消毒及酒精清潔。
+tags: 衛生,消毒
+serviceType: 全部
+
+33.
+
+category: 衛生
+question: 是否使用一次性用品？
+answer: 指套、棉片等多為一次性使用，確保安全與衛生。
+tags: 一次性
+serviceType: 全部
+
+34.
+
+category: 衛生
+question: 敏感體質可以做美睫嗎？
+answer: 可以，但建議先做敏感測試。
+tags: 敏感
+serviceType: 美睫
+
+35.
+
+category: 衛生
+question: 懷孕可以做霧眉嗎？
+answer: 依個人身體狀況，建議產後再施作較安全。
+tags: 懷孕
+serviceType: 霧眉
+
+36.
+
+category: 衛生
+question: 是否會有感染風險？
+answer: 我們遵循醫療級衛生流程，風險極低。
+tags: 感染
+serviceType: 全部
+
+📌 注意事項 / 禁忌（4 筆）
+37.
+
+category: 注意事項
+question: 有甲溝炎可以做美甲嗎？
+answer: 急性發炎不建議，需等傷口癒合後再施作。
+tags: 甲溝炎
+serviceType: 美甲
+
+38.
+
+category: 注意事項
+question: 做臉前需要卸妝嗎？
+answer: 到店由美容師協助清潔即可。
+tags: 卸妝
+serviceType: 美容
+
+39.
+
+category: 注意事項
+question: 做臉後可以日曬嗎？
+answer: 需避免曝曬至少 48 小時。
+tags: 日曬
+serviceType: 美容
+
+40.
+
+category: 注意事項
+question: 做完美睫可以用油類卸妝嗎？
+answer: 不建議，會降低黏著力。
+tags: 卸妝
+serviceType: 美睫
