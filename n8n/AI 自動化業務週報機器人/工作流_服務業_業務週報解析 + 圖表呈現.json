@@ -1,0 +1,299 @@
+{
+  "name": "工作流_服務業_業務週報解析 + 圖表呈現",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        -208
+      ],
+      "id": "a6ad36d2-2621-480d-8f34-811b30264a65",
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1447209364,
+          "mode": "list",
+          "cachedResultName": "",
+          "cachedResultUrl": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -704,
+        -64
+      ],
+      "id": "b16c195b-77d4-470b-ab5d-84b3e9778180",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "options": {
+          "systemMessage": "你是一位專業數據分析師與資深前端排版工程師。  \n你的任務是：根據系統提供的「單週業績資料」，產生完整的 **《團隊週報分析報告（HTML格式）》** + 圖表位置（img 標籤）。\n\n⚠️ 請務必遵守以下規則：\n1. **只能輸出 HTML，不可輸出純文字版本、不可以 Markdown、不可以 JSON。**\n2. HTML 必須完整排版良好，可直接寄送成 Email。\n3. 圖表請輸出 `<img src=\"CHART_URL\" />`，CHART_URL 使用我提供的 charts 資料格式自行生成 QuickChart 連結。\n4. 內容必須使用臺灣繁體中文。\n5. 所有欄位都要完整且具備分析深度。\n\n---\n\n📌 **HTML 報告架構（務必照此格式輸出）**\n\n<html>\n<body style=\"font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial; line-height:1.6; color:#333; padding:24px;\">\n\n<h1>📊 團隊週報分析報告</h1>\n<p>期間：自動從資料推論。</p>\n\n<h2>📌 整體業績總覽</h2>\n<ul>\n  <li>本週總營收：XXXXX 元</li>\n  <li>成交數 / 未成交數：X 筆 / X 筆</li>\n  <li>整體成交率：XX.X%</li>\n</ul>\n\n<h2>📌 業務個人績效</h2>\n（每位業務自動產生以下段落）\n<h3>業務姓名</h3>\n<ul>\n  <li>總營收：XXXX 元</li>\n  <li>成交筆數 / 未成交筆數</li>\n  <li>個人成交率</li>\n</ul>\n<p><strong>本週亮點：</strong>...</p>\n<p><strong>本週可改善方向：</strong>...</p>\n\n<h2>📌 商品銷售分析</h2>\n<ul>\n  <li>各商品銷售占比：自動計算 %</li>\n  <li>最暢銷商品：XXXXX</li>\n  <li>成交 vs 未成交分析：XXXXX</li>\n</ul>\n\n<h2>📌 趨勢與洞察</h2>\n<p>自動輸出深度分析內容</p>\n\n<h2>📌 本週建議</h2>\n<ol>\n  <li>具體建議 1</li>\n  <li>具體建議 2</li>\n  <li>具體建議 3</li>\n</ol>\n\n<h2>📌 圖表分析</h2>\n<h3>每日銷售趨勢圖</h3>\n<img src=\"CHART_URL_1\" style=\"max-width:100%;\"/>\n\n<h3>商品銷售占比圖</h3>\n<img src=\"CHART_URL_2\" style=\"max-width:100%;\"/>\n\n<h3>業務績效比較圖</h3>\n<img src=\"CHART_URL_3\" style=\"max-width:100%;\"/>\n\n<h3>商品成交率圖</h3>\n<img src=\"CHART_URL_4\" style=\"max-width:100%;\"/>\n\n</body>\n</html>\n\n---\n\n📌 **圖表 CHART_URL 產生規則（AI 必須照規則組 URL）**\n\n使用 QuickChart 格式：\nhttps://quickchart.io/chart?c={ chart-config }\n\n例如生成折線圖：\n{\n \"type\": \"line\",\n \"data\": {\n   \"labels\": [\"2025-01-01\",\"2025-01-02\"],\n   \"datasets\": [{ \"label\":\"每日營收\", \"data\":[1500,1800] }]\n }\n}\n\n你必須根據使用者提供的 charts 物件自動建構四種圖：\n1. sales_by_day → Line chart\n2. sales_by_product → Pie chart\n3. sales_by_staff → Bar chart\n4. conversion_by_product → Bar chart\n\n⚠️ 圖表必須能成功送到 QuickChart，避免錯字或 JSON 格式錯誤。\n\n---\n\n❗ 最終輸出要求：\n✔ 只能輸出 HTML（含 <html> <body>）  \n✔ 不可解釋、不加多餘文字  \n✔ 不可輸出 JSON  \n✔ 排版需美觀  \n✔ 圖表必須用 <img src=\"...\">  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -256,
+        -64
+      ],
+      "id": "7c2f9b8c-3fb6-4492-9f6f-7b7c44059a7b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        160
+      ],
+      "id": "37661c79-c4a0-4c5e-9394-1833e279f65e",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        160
+      ],
+      "id": "ab54eb26-4396-4c92-9709-18798447ccbb",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {
+          "includeBinaries": false
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -64
+      ],
+      "id": "3f44ea63-00b6-4ec3-804c-f27c2540c03e",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "data": "={{ $json.data }}",
+        "chartOptions": {},
+        "datasetOptions": {}
+      },
+      "type": "n8n-nodes-base.quickChartTool",
+      "typeVersion": 1,
+      "position": [
+        0,
+        160
+      ],
+      "id": "bb7f3054-67af-4ae1-9d6d-75ce0b7e0296",
+      "name": "QuickChart"
+    },
+    {
+      "parameters": {
+        "sendTo": "",
+        "subject": "本週業務週報解析",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        -64
+      ],
+      "id": "18c20319-71fc-4709-99de-466a886066b4",
+      "name": "Send a message",
+      "webhookId": "",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -960,
+        0
+      ],
+      "id": "2c1c8235-d694-42b5-ad04-e516bf3eac46",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "QuickChart": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "886d43a5-e81e-4ff6-9040-87b0fa76d9c6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "id": "bRiXy2P2s32TlwFC",
+  "tags": [
+    {
+      "updatedAt": "2025-12-11T15:56:55.184Z",
+      "createdAt": "2025-12-11T15:56:55.184Z",
+      "id": "RGyP5P3s5blxFvJK",
+      "name": "workshop"
+    },
+    {
+      "updatedAt": "2025-12-11T15:56:44.291Z",
+      "createdAt": "2025-12-11T15:56:44.291Z",
+      "id": "YAUkYvkxmWlq3ziO",
+      "name": "service"
+    },
+    {
+      "updatedAt": "2025-12-11T02:57:11.571Z",
+      "createdAt": "2025-12-11T02:57:11.571Z",
+      "id": "u6b8svyrdsA4yKaP",
+      "name": "AI"
+    }
+  ]
+}
