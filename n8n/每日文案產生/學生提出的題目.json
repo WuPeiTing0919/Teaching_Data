@@ -1,0 +1,925 @@
+{
+  "name": "學生提出的題目",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "zeabur-test",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -464,
+        128
+      ],
+      "id": "42719684-97c6-4360-97fc-17a790f534ff",
+      "name": "Webhook",
+      "webhookId": "72fcb719-9499-4c2b-bb53-c8fd0caaa6a7"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "你是一位資深社群行銷企劃與文案專家，擅長撰寫高互動、高轉換的 Facebook 活動貼文。\n\n請根據以下活動資訊，產出一篇適合 Facebook 粉絲專頁發布的宣傳貼文。\n\n【活動基本資訊】\n活動主題：\n活動目的：（例如：收集名單 / 導流 / 到店核銷）\n目標族群：\n活動內容重點：\n優惠或誘因：\n活動截止時間：\n留資料連結：\n發文日期 : \n\n請不要詢問用戶資料缺失等問題，請務必直接使用用戶提供的資料完成文案生成\n\n【文案風格要求】\n語氣要自然、有吸引力、像真人小編\n開頭要有「吸睛鉤子」引起興趣\n中間要清楚說明活動好處與參加方式\n強調「現在不做會錯過」的感覺（FOMO）\n結尾要有明確 CTA，引導點擊連結填資料\n適當加入 Emoji 增加親和力\n適合手機閱讀，段落不要太長\n\n【輸出格式請嚴格遵守】\n【貼文標題】\n（短、吸睛）\n\n【Facebook 貼文內文】\n（完整可直接貼上發布）\n\n【Hashtags】\n（5~8 個相關 hashtag）\n\n\n【回傳格式（請務必照此格式輸出）】\n這裡的 sendtime 就是發文日期，data 是你產出文案結果\n{  \n  \"data\":\"\",\n  \"event_theme\" : \"\",\n  \"event_purpose\" : \"\",\n  \"target_audience\" : \"\",\n   \"key_event_content\" : \"\",\n   \"Discounts\" : \"\",\n   \"Deadline\" : \"\",\n   \"Link\" : \"\",\n  \"sendtime\":\"\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        48,
+        16
+      ],
+      "id": "d80e45ec-0b71-4a6f-ba19-71b6181f8d74",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6aceb0f-e502-4866-ab09-a84f30d09bb7",
+              "name": "userId",
+              "value": "={{ $json.body.events[0].source.userId }}",
+              "type": "string"
+            },
+            {
+              "id": "e7d82477-b2bc-4298-9c96-d789f2574edd",
+              "name": "replyToken",
+              "value": "={{ $json.body.events[0].replyToken }}",
+              "type": "string"
+            },
+            {
+              "id": "a48cf0f9-cba6-4a97-82e2-ace44a7fee2b",
+              "name": "message",
+              "value": "={{ $json.body.events[0].message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        128
+      ],
+      "id": "fee2281b-712e-4855-bef1-36f76691f0f0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        240
+      ],
+      "id": "4d4a9754-f5e5-4243-93ec-61c6e59a248d",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "XIJ3D6PXT0v7SbvQ",
+          "name": "DeepSeek account ( AI )"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        112,
+        240
+      ],
+      "id": "4fbc68ec-b998-49bc-bb91-ef0600b8c109",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"replyToken\":\"{{ $('Edit Fields').item.json.replyToken }}\",\n    \"messages\":[\n        {\n            \"type\":\"text\",\n            \"text\":\"已完成需求並存放到資料庫\" \n        }\n    ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        672,
+        128
+      ],
+      "id": "89606cf4-dfff-4dc2-95af-c48a8d6df63e",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "VyYA0sR58W3ErPiL",
+          "name": "Bearer Auth ( Line OA )"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{  \n  \"data\":\"\",\n  \"event_theme\" : \"\",\n  \"event_purpose\" : \"\",\n  \"target_audience\" : \"\",\n   \"key_event_content\" : \"\",\n   \"Discounts\" : \"\",\n   \"Deadline\" : \"\",\n   \"Link\" : \"\",\n  \"sendtime\":\"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        240
+      ],
+      "id": "474651fe-3504-4110-8c35-72a5024c9a23",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "TJ8OyfG6Nob5zm3r",
+          "mode": "list",
+          "cachedResultName": "FB_Article",
+          "cachedResultUrl": "/projects/gAHwkfkKxKqUN294/datatables/TJ8OyfG6Nob5zm3r"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "data": "={{ $json.output.data }}",
+            "sendtime": "={{ $json.output.sendtime }}",
+            "event_theme": "={{ $json.output.event_theme }}",
+            "event_purpose": "={{ $json.output.event_purpose }}",
+            "target_audience": "={{ $json.output.target_audience }}",
+            "key_event_content": "={{ $json.output.key_event_content }}",
+            "Discounts": "={{ $json.output.Discounts }}",
+            "Deadline": "={{ $json.output.Deadline }}",
+            "Link": "={{ $json.output.Link }}",
+            "check_mail": false,
+            "replyToken": "={{ $('Edit Fields').item.json.replyToken }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "sendtime",
+              "displayName": "sendtime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_theme",
+              "displayName": "event_theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_purpose",
+              "displayName": "event_purpose",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "target_audience",
+              "displayName": "target_audience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "key_event_content",
+              "displayName": "key_event_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Discounts",
+              "displayName": "Discounts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deadline",
+              "displayName": "Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "check_mail",
+              "displayName": "check_mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "replyToken",
+              "displayName": "replyToken",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        128
+      ],
+      "id": "b70d7203-c99d-4001-b47c-17b130d019a8",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "formTitle": "活動表單基本資料填寫",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "姓名"
+            },
+            {
+              "fieldLabel": "電話",
+              "fieldType": "number"
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -464,
+        448
+      ],
+      "id": "a2932f99-8bda-4b3c-97bb-71ed1e13c8d3",
+      "name": "On form submission",
+      "webhookId": "c60be322-bb33-4442-9c63-2ace1ffe0b1c"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"verify_url\": \"https://n8n-petty.zeabur.app/verify?id={{ $json.Email }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        448
+      ],
+      "id": "016cf571-b369-47ff-978d-9d5d533bfbbf",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "url": "https://api.qrserver.com/v1/create-qr-code/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "size",
+              "value": "300x300"
+            },
+            {
+              "name": "data",
+              "value": "={{ $json.verify_url }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -16,
+        448
+      ],
+      "id": "33984f25-2cf9-4159-9dbf-b113c8e87d1e",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "petty09190@gmail.com",
+        "subject": "🎉 您的專屬活動 QR Code 已發行｜到店即可使用",
+        "message": "=<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#f4f6f8;padding:30px 0;\">\n  <tr>\n    <td align=\"center\">\n\n      <!-- 主卡片 -->\n      <table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.08);\">\n      \n        <!-- 內容 -->\n        <tr>\n          <td style=\"padding:32px;color:#333333;font-size:15px;line-height:1.7;\">\n            \n            <p>親愛的貴賓您好，</p>\n\n            <p>感謝您參與 <strong>{{ $json.event_theme }}</strong> 💛<br>\n            您的專屬認證 QR Code 已產生，請於到店時出示此 QR Code 完成活動認證。</p>\n\n            <!-- 活動資訊框 -->\n            <table width=\"100%\" style=\"margin:25px 0;background:#f9fafb;border-radius:8px;padding:18px;\">\n              <tr>\n                <td>\n                  <p style=\"margin:0 0 10px;\"><strong>🎁 活動禮遇</strong><br>{{ $json.Discounts }}</p>\n                  <p style=\"margin:0 0 10px;\"><strong>📅 使用期限</strong><br>{{ $json.Deadline }}</p>\n                  <p style=\"margin:0;\"><strong>🏬 使用方式</strong><br>\n                  1️⃣ 到指定門市<br>\n                  2️⃣ 出示本信件 QR Code<br>\n                  3️⃣ 由服務人員掃描完成認證\n                  </p>\n                </td>\n              </tr>\n            </table>\n\n            <!-- QR Code -->\n            <div style=\"text-align:center;margin:30px 0;\">\n              <p style=\"margin-bottom:10px;font-weight:bold;\">您的專屬 QR Code</p>\n              <img src=\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ $('HTTP Request').item.json.verify_url }}\" alt=\"QR Code\" width=\"220\" style=\"border-radius:8px;border:1px solid #e5e7eb;\">\n            </div>\n\n            <!-- 提醒 -->\n            <div style=\"background:#fff7ed;border-radius:8px;padding:15px;font-size:13px;color:#92400e;\">\n              ⚠️ 溫馨提醒<br>\n              • QR Code 為個人專屬，請勿轉發<br>\n              • 每組 QR 僅可使用一次<br>\n              • 逾期將自動失效\n            </div>\n\n            <p style=\"margin-top:30px;\">我們期待您的蒞臨，祝您有美好的一天 🌿</p>\n\n            <p style=\"margin-top:30px;font-size:14px;color:#6b7280;\">\n              智合科技 敬上\n            </p>\n\n          </td>\n        </tr>\n\n      </table>\n\n      <!-- Footer -->\n      <p style=\"margin-top:20px;font-size:12px;color:#9ca3af;\">\n        本信件為系統自動寄送，請勿直接回覆\n      </p>\n\n    </td>\n  </tr>\n</table>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        656,
+        448
+      ],
+      "id": "e467bee8-81de-421b-a03b-9ee8fbb9479c",
+      "name": "Send a message",
+      "webhookId": "0f991d22-45f8-42d6-b4ab-d9289617b47a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "eikJBUvO8elKPYpd",
+          "name": "Gmail account ( n8n_zeabur )"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "TJ8OyfG6Nob5zm3r",
+          "mode": "list",
+          "cachedResultName": "FB_Article",
+          "cachedResultUrl": "/projects/gAHwkfkKxKqUN294/datatables/TJ8OyfG6Nob5zm3r"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        448
+      ],
+      "id": "0089b3a6-56b8-45d0-bb7e-dad3fff25cf2",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items;\n\nif (rows.length === 0) {\n  return [];\n}\n\n// 取最後一筆\nreturn [rows[rows.length - 1]];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        448
+      ],
+      "id": "7b53eb6d-42ed-443f-ae3d-7df561791d12",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -464,
+        -208
+      ],
+      "id": "97b16151-cac1-4691-8fe6-b99ff9be5715",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "TJ8OyfG6Nob5zm3r",
+          "mode": "list",
+          "cachedResultName": "FB_Article",
+          "cachedResultUrl": "/projects/gAHwkfkKxKqUN294/datatables/TJ8OyfG6Nob5zm3r"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "check_mail",
+              "condition": "isFalse"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -208
+      ],
+      "id": "52e1bde7-58dd-4f0c-8530-b434f06e1682",
+      "name": "Get row(s)1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "410777fe-b016-420f-8e5d-9a4cb60c4068",
+              "leftValue": "={{ $json.check_mail }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "90ff03dd-aabd-4001-a340-aab8d948b672",
+              "leftValue": "={{ $json.sendtime }}",
+              "rightValue": "2026-01-29T23:33:56",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -16,
+        -208
+      ],
+      "id": "74a7e3d5-4011-4bd0-9aaf-788be58d35bf",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "petty09190@gmail.com",
+        "subject": "🎉 新的活動上線囉~",
+        "emailType": "text",
+        "message": "={{ $json.data }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        272,
+        -208
+      ],
+      "id": "a6620721-0e36-485f-89e2-c5bcf2a134c1",
+      "name": "Send a message1",
+      "webhookId": "0f991d22-45f8-42d6-b4ab-d9289617b47a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "eikJBUvO8elKPYpd",
+          "name": "Gmail account ( n8n_zeabur )"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "TJ8OyfG6Nob5zm3r",
+          "mode": "list",
+          "cachedResultName": "FB_Article",
+          "cachedResultUrl": "/projects/gAHwkfkKxKqUN294/datatables/TJ8OyfG6Nob5zm3r"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "check_mail",
+              "condition": "isFalse"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "check_mail": true
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "sendtime",
+              "displayName": "sendtime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_theme",
+              "displayName": "event_theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_purpose",
+              "displayName": "event_purpose",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "target_audience",
+              "displayName": "target_audience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "key_event_content",
+              "displayName": "key_event_content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Discounts",
+              "displayName": "Discounts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deadline",
+              "displayName": "Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "check_mail",
+              "displayName": "check_mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "replyToken",
+              "displayName": "replyToken",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        -208
+      ],
+      "id": "eba16b05-7eec-46eb-8acf-dbd678520e64",
+      "name": "Update row(s)"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "活動表單填寫完成",
+        "completionMessage": "感謝你的填寫，系統已收到結果，請確認信箱是否有收到認證 QR Code，謝謝。",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        864,
+        448
+      ],
+      "id": "d417b4d5-1def-4f8c-8b02-1a794f35c590",
+      "name": "Form",
+      "webhookId": "60a91d73-5a1a-4960-9d4f-30ea60896954"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        []
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Update row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "5a80d121-8620-4c8f-804a-e285cd83de21",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fe1a4c5007b6ad9953aad51a290c6af7945cef58ed5deffcb9e49c271b02a644"
+  },
+  "id": "lMZDOvy107n_oaleleNfh",
+  "tags": []
+}
